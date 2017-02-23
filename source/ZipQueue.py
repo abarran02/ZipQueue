@@ -1,4 +1,5 @@
 import os
+os.chdir("..")
 while True:
 	if not os.path.isfile("7za.exe"):
 	    input("7za.exe not found in working directory")
@@ -33,9 +34,8 @@ def pathsize(start_path = '.'):
             total_size += os.path.getsize(fp)
     return total_size
 
-version = "1.0.0"
+version = "1.0.2"
 builddate = "2/22/2017"
-cmdtitle("Zip Queue %s" % version)
 print(
 	"      ___                       ___                                ___           ___           ___           ___ ",
 	"     /\__\                     /\  \                              /\  \         /\__\         /\  \         /\__\ ",
@@ -48,9 +48,10 @@ print(
 	"     |::/  /       \::/  /   \:\  \             \:\/:/  \/__/   \:\/:/  /     \:\/:/  /     \:\/:/  /     \:\/:/  / ",
 	"     |:/  /        /:/  /     \:\__\             \::/  /         \::/  /       \::/  /       \::/  /       \::/  / ",
 	"     |/__/         \/__/       \/__/              \/__/           \/__/         \/__/         \/__/         \/__/ ",
-    "verison %s     %s" % (version, builddate), "written by pixelpython", sep="\n")
+    "verison {0}     {1}".format(version, builddate), "written by pixelpython", sep="\n")
 
 while True:
+	cmdtitle("Zip Queue %s" % version)
 	pathlist = []
 	namelist = []
 	ratiolist = []
@@ -80,6 +81,7 @@ while True:
 				print("Path not found.")
 		start = timer()
 		for i in range(len(pathlist)):
+			cmdtitle("Zip Queue {0} - Compressing {1}.7z".format(version, namelist[i]))
 			filetime = timer()
 			call('7za a -mx9 "{0}" "{1}"'.format(namelist[i], pathlist[i]))
 			print("File compressed in %ss" % round((timer() - filetime), 3))
@@ -93,9 +95,17 @@ while True:
 			if len(pathlist) == 0:
 				pathapp = input("Files to decompress:  ")
 			else:
-				pathapp = input("Files to decompress (q to quit):  ")
-			if pathapp.lower() == "q" and len(pathlist) != 0:
-				break
+				pathapp = input("Files to decompress [q] quit [v] view [r] remove:  ")
+			if pathapp in ["q", "v", "r"] and len(pathlist) != 0:
+				if pathapp.lower() == "q":
+					break
+				elif pathapp.lower() == "v" or pathapp.lower() == "r":
+					for i in range(len(pathlist)):
+						print("{0} - {1}".format(i+1, pathlist[i]))
+						if pathapp.lower() == "r":
+								remove = get_intrang("Path to remove:  ", len(pathlist)) - 1
+								del pathlist[remove]
+								del namelist[remove]
 			elif os.path.isfile(pathapp):
 				pathlist.append(pathapp)
 			else:
